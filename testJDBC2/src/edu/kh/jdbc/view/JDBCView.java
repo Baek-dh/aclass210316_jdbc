@@ -1,8 +1,11 @@
 package edu.kh.jdbc.view;
 
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
 
+import edu.kh.jdbc.board.model.service.BoardService;
+import edu.kh.jdbc.board.model.vo.Board;
 import edu.kh.jdbc.member.model.service.MemberService;
 import edu.kh.jdbc.member.model.vo.Member;
 
@@ -19,7 +22,7 @@ public class JDBCView {
 	
 	private Scanner sc = new Scanner(System.in);
 	private MemberService memberService = new MemberService();
-	
+	private BoardService boardService = new BoardService();
 	
 
 	/**
@@ -61,6 +64,11 @@ public class JDBCView {
 					System.out.println("2. 내 정보 수정");
 					System.out.println("3. 비밀번호 수정");
 					System.out.println("4. 회원 탈퇴");
+					System.out.println("5. 게시글 목록 조회");
+					
+					System.out.println("6. 게시글 상세 조회");
+					System.out.println("7. 게시글 작성");
+					System.out.println("8. 게시글 삭제");
 					
 					System.out.println("0. 로그아웃");
 					System.out.println("==================");
@@ -74,6 +82,10 @@ public class JDBCView {
 					case 2 : updateMember(); break;
 					case 3 : updatePw(); break;
 					case 4 : secession(); break;
+					case 5 : selectAllBoard(); break;
+					case 6 : selectBoard(); break;
+					case 7 : insertBoard(); break;
+					case 8 : deleteBoard(); break;
 					case 0 : 
 						loginMember = null; // 로그아웃
 						System.out.println("로그아웃 되었습니다.");
@@ -300,15 +312,94 @@ public class JDBCView {
 				e.printStackTrace();
 			}
 			
-			
 		}else if(ch == 'N') {
 			System.out.println("회원 탈퇴 취소");
 		}else {
 			System.out.println("잘못 입력하셨습니다.");
 		}
 		
+	}
+	
+	
+	/** 
+	 * 게시글 목록 조회 View
+	 */
+	private void selectAllBoard() {
+		
+		try {
+			// DB에서 게시글 목록을 조회해서 반환하는 Service 호출
+			List<Board> boardList = boardService.selectAllBoard();
+			
+			if(boardList.isEmpty()) { // 조회된 게시글이 없으면
+				System.out.println("게시글이 존재하지 않습니다.");
+			}else {
+				
+				for(Board b : boardList) {
+					
+					System.out.printf("%d | %s | %s | %s | %d\n",
+									  b.getBoardNo(), b.getBoardTitle(),
+									  b.getCreateDt().toString(),
+									  b.getMemId(), b.getReadCount());
+				}
+			}
+			
+			
+		}catch (Exception e) {
+			System.out.println("게시글 목록 조회 중 오류 발생");
+			e.printStackTrace();
+		}
 		
 	}
+	
+	
+	/**
+	 * 게시글 상세 조회 View
+	 */
+	private void selectBoard() {
+		/* 게시글 번호를 입력 받아 
+		 * DB에서 일치하는 번호의 게시글을 조회
+		 * 
+		 * 일치하는 번호가 없을 경우 "해당 번호의 게시글이 존재하지 않습니다."
+		 * 일치하는 번호가 있을 경우 아래 형태로 출력
+		 
+		 --------------------------------------------------------
+		 글번호 : OOO | 제목 : OOO
+		 작성자ID : OOO | 작성일 : OOO | 조회수 : OOO 
+		 --------------------------------------------------------
+		 OOO (<- 내용 출력)
+		 --------------------------------------------------------
+		 
+		 * */
+	}
+	
+	
+	/**
+	 * 게시글 삽입 View
+	 */
+	private void insertBoard() {
+		/* 제목, 내용을 입력 받아 BOARD 테이블에 삽입.
+		 * 
+		 * (INSERT 시 MEM_NO(회원번호) 가 필요합니다!)
+		 * */
+	}
+	
+	
+	/**
+	 * 게시글 삭제 View
+	 */
+	private void deleteBoard() {
+		/* 게시글 번호를 입력 받아 
+		 * 일치하는 번호를 가진 BOARD 테이블의 행의 DELETE_FL 값을 'Y'로 변경
+		 * 
+		 * (게시글 삭제는 자신의 글만 가능해야 함.)
+		 * (SQL문 조건으로 게시글 번호, 회원 번호가 모두 일치할 경우에만 UPDATE 수행)
+		 * 
+		 * 'Y'로 변경 성공 시 "게시글이 삭제되었습니다." 출력
+		 * 실패 시 : "번호가 일치하는 게시글이 없거나, 글 작성자가 아닙니다." 출력
+		 * */
+	}
+	
+	
 	
 	
 	
