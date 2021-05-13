@@ -36,6 +36,36 @@
 		AND MEM_NO = ?
 	</entry>
 
+	<entry key="newSelectBoard">
+		SELECT BOARD_TITLE, BOARD_CONTENT, MEM_ID, CREATE_DT, READ_COUNT
+		FROM V_BOARD
+		WHERE BOARD_NO = ?
+		AND DELETE_FL = 'N'
+	</entry>
+
+
+	<!-- 조회 수 증가 SQL -->
+	<entry key="updateReadCount">
+		UPDATE BOARD SET
+		READ_COUNT = READ_COUNT + 1
+		WHERE BOARD_NO = ?
+	</entry>
+
+
+	<!-- 다음 게시글 번호 조회 SQL -->
+	<entry key="nextBoardNo">
+		SELECT SEQ_BNO.NEXTVAL AS BOARD_NO FROM DUAL
+	</entry>
+
+
+	<!-- 게시글 삽입 SQL -->
+	<entry key="newInsertBoard">
+		INSERT INTO BOARD
+		VALUES( ?, ?, ?, DEFAULT, DEFAULT, DEFAULT, ? )
+	</entry>
+
+
+
 
 </properties>
 

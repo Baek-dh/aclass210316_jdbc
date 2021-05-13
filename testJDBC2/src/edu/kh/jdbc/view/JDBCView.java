@@ -73,9 +73,17 @@ public class JDBCView {
 					System.out.println("4. 회원 탈퇴");
 					System.out.println("5. 게시글 목록 조회");
 
+					// 숙제
 					System.out.println("6. 게시글 상세 조회");
 					System.out.println("7. 게시글 작성");
 					System.out.println("8. 게시글 삭제");
+					
+					// 수업(숙제 내용 업그레이드)
+					System.out.println("9. new 게시글 상세 조회");
+					System.out.println("10. new 게시글 작성");
+					System.out.println("11. new 게시글 삭제");
+					System.out.println("12. new 게시글 수정");
+					
 
 					System.out.println("0. 로그아웃");
 					System.out.println("==================");
@@ -85,30 +93,19 @@ public class JDBCView {
 					sc.nextLine();
 
 					switch (sel) {
-					case 1:
-						selectMyInfo();
-						break;
-					case 2:
-						updateMember();
-						break;
-					case 3:
-						updatePw();
-						break;
-					case 4:
-						secession();
-						break;
-					case 5:
-						selectAllBoard();
-						break;
-					case 6:
-						selectBoard();
-						break;
-					case 7:
-						insertBoard();
-						break;
-					case 8:
-						deleteBoard();
-						break;
+					case 1: selectMyInfo(); break;
+					case 2: updateMember(); break;
+					case 3: updatePw(); break;
+					case 4: secession(); break;
+					case 5: selectAllBoard(); break;
+					case 6: selectBoard(); break;
+					case 7: insertBoard(); break;
+					case 8: deleteBoard(); break;
+					case 9: newSelectBoard(); break;
+					case 10: newInsertBoard(); break;
+					case 11: break;
+					case 12: break;
+					
 					case 0:
 						loginMember = null; // 로그아웃
 						System.out.println("로그아웃 되었습니다.");
@@ -477,4 +474,108 @@ public class JDBCView {
           System.out.println("잘못 입력하셨습니다.");
        }
     }
+    
+    
+    /**
+     * 게시글 상세 조회 View
+     * - 게시글이 성공적으로 상세조회 될 경우 조회수를 1씩 증가
+     */
+    private void newSelectBoard() {
+    	System.out.println("[게시글 상세 조회]");
+    	
+    	System.out.print("게시글 번호 입력 : ");
+    	int boardNo = sc.nextInt();
+    	sc.nextLine();
+    	
+    	try {
+    		Board board = boardService.newSelectBoard(boardNo);
+    		
+    		if(board != null) { // 조회된 게시글이 있을 경우
+    			
+				System.out.println(" --------------------------------------------------------");
+				System.out.printf("글번호 : %d | 제목 : %s\n", board.getBoardNo(), board.getBoardTitle());
+				System.out.printf("작성자ID : %s | 작성일 : %s | 조회수 : %d\n", board.getMemId(), board.getCreateDt().toString(),
+						board.getReadCount());
+				System.out.println(" --------------------------------------------------------");
+				System.out.println(board.getBoardContent());
+				System.out.println(" --------------------------------------------------------");
+    			
+    		}else {
+    			System.out.println("해당 번호의 게시글이 존재하지 않습니다.");
+    		}
+    		
+    	}catch(Exception e) {
+    		System.out.println("게시글 상세 조회 과정에서 오류 발생");
+    		e.printStackTrace();
+    	}
+    }
+    
+    
+    /**
+     * 게시글 삽입 View
+     * - 제목, 내용(여러 줄 입력)을 입력 받아 게시글을 삽입하고,
+     *   삽입 성공 시 삽입된 게시글의 내용을 상세 조회
+     */
+    private void newInsertBoard() {
+    	System.out.println("[게시글 작성]");
+    	
+    	System.out.print("제목 : ");
+    	String boardTitle = sc.nextLine();
+    	
+    	System.out.println("--- 내용 입력(입력 종료 시 exit 입력) --- ");
+    	
+    	StringBuffer sb = new StringBuffer(); 
+    	// String에 내용 누적 시 메모리 낭비가 심함 --> StringBuffer로 해결
+    	
+    	String str = null; // 입력된 문자열을 임시 저장할 변수
+    	while(true) {
+    		str = sc.nextLine(); // 한 줄 입력 받음
+    		
+    		if(str.equals("exit")) { // exit가 입력된 경우
+    			break;
+    		}
+    		
+    		sb.append(str); // StringBuffer 객체에 입력 받은 한 줄 추가
+    		sb.append("\n"); // StringBuffer 객체에 개행문자를 추가해 줄바꿈 효과를 만듦
+    	}
+    	
+    	
+    	try {
+    		
+    		Board board = boardService.newInsertBoard(boardTitle, sb.toString());
+    													// 제목             내용
+    		
+    		if(board != null) { // 조회된 게시글이 있을 경우
+    			
+				System.out.println(" --------------------------------------------------------");
+				System.out.printf("글번호 : %d | 제목 : %s\n", board.getBoardNo(), board.getBoardTitle());
+				System.out.printf("작성자ID : %s | 작성일 : %s | 조회수 : %d\n", board.getMemId(), board.getCreateDt().toString(),
+						board.getReadCount());
+				System.out.println(" --------------------------------------------------------");
+				System.out.println(board.getBoardContent());
+				System.out.println(" --------------------------------------------------------");
+    			
+    		}else {
+    			System.out.println("게시글 삽입 실패...");
+    		}
+    		
+    		
+    		
+    	}catch (Exception e) {
+    		System.out.println("게시글 삽입 과정에서 오류 발생");
+    		e.printStackTrace();
+    	}
+    	
+    	
+    	
+    	
+    }
+    
+    
+    
+    
+    
+    
+    
+    
 }
